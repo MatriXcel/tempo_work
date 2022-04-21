@@ -1,0 +1,2 @@
+
+tensor(0.0169, grad_fn=<MseLossBackward0>) tensor(0.0169)

@@ -1,0 +1,2 @@
+
+tensor(0.2198, grad_fn=<SqrtBackward0>) tensor(0.0483)

@@ -1,0 +1,10 @@
+2022-04-21 12:19:20,146 INFO    MainThread:32408 [wandb_setup.py:_flush():75] Loading settings from C:\Users\wasii\.config\wandb\settings
+2022-04-21 12:19:20,147 INFO    MainThread:32408 [wandb_setup.py:_flush():75] Loading settings from C:\Users\wasii\Documents\CodingProjects\TEMPO_Work\wandb\settings
+2022-04-21 12:19:20,147 INFO    MainThread:32408 [wandb_setup.py:_flush():75] Loading settings from environment variables: {}
+2022-04-21 12:19:20,147 INFO    MainThread:32408 [wandb_setup.py:_flush():75] Inferring run settings from compute environment: {'program_relpath': 'train.py', 'program': 'C:\\Users\\wasii\\Documents\\CodingProjects\\TEMPO_Work\\train.py'}
+2022-04-21 12:19:20,148 INFO    MainThread:32408 [wandb_init.py:_log_setup():438] Logging user logs to C:\Users\wasii\Documents\CodingProjects\TEMPO_Work\wandb\run-20220421_121920-3due6ok5\logs\debug.log
+2022-04-21 12:19:20,148 INFO    MainThread:32408 [wandb_init.py:_log_setup():439] Logging internal logs to C:\Users\wasii\Documents\CodingProjects\TEMPO_Work\wandb\run-20220421_121920-3due6ok5\logs\debug-internal.log
+2022-04-21 12:19:20,148 INFO    MainThread:32408 [wandb_init.py:init():472] calling init triggers
+2022-04-21 12:19:20,149 INFO    MainThread:32408 [wandb_init.py:init():475] wandb.init called with sweep_config: {}
+config: {}
+2022-04-21 12:19:20,149 INFO    MainThread:32408 [wandb_init.py:init():520] wandb.init() called when a run is still active

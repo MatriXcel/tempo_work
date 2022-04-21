@@ -1,0 +1,18 @@
+{
+    "os": "Windows-10-10.0.19044-SP0",
+    "python": "3.9.7",
+    "heartbeatAt": "2022-04-21T16:19:20.018247",
+    "startedAt": "2022-04-21T16:19:16.362301",
+    "docker": null,
+    "gpu": "NVIDIA GeForce MX150",
+    "gpu_count": 1,
+    "cpu_count": 8,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "C:\\Users\\wasii\\Documents\\CodingProjects\\TEMPO_Work\\train.py",
+    "codePath": "train.py",
+    "host": "LAPTOP-1TLEB1G7",
+    "username": "wasii",
+    "executable": "C:\\Users\\wasii\\anaconda3\\envs\\tempo_env\\python.exe"
+}

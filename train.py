@@ -1,0 +1,242 @@
+from netCDF4 import Dataset
+import matplotlib.pyplot as plt 
+import cartopy.crs as ccrs
+import matplotlib.ticker as mticker
+import numpy as np
+import torch
+from torch import utils
+
+import NN_layer
+import torch.nn.functional as F
+
+import tqdm
+import wandb
+
+import argparse
+
+from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Train machine translation transformer model")
+
+    #required argument
+    parser.add_argument(
+        "--map_file",
+        type=str,
+        required=True,
+        help=("geographic map containing data of different atmospheric variables"
+        ),
+    )
+
+    args = parser.parse_args()
+
+    return args
+
+
+
+def main():
+    args = parse_args()
+
+    # Define path to netCDF file to open and read
+    hcho_fp = './TEMPO_20130704_17h_LA1_HCHO.nc'
+    o3_fp = './TEMPO_20130704_17h_LA1_O3.nc'
+    #la_rtm_fp = './TEMPO_20130704_17h_LA1_rtm.nc'
+
+    la_rtm_fp = args.map_file
+    # Open the file. I like to do it using with to guarantee
+    # that it will be closed after we are done reading
+    # netCDF files are organized in group (which can have subgroups)
+    # and data fields. Each group or data field can have attributes.
+    # The file as a whole can also have attributes that in this case
+    # are called global attributes. Following this example and reading
+    # https://unidata.github.io/netcdf4-python/ you should get some
+    # familiarity about how to work with them
+
+
+    with Dataset(hcho_fp,'r') as hcho_src, Dataset(o3_fp, 'r') as o3_src, Dataset(la_rtm_fp) as la_src:
+        # Read geolocation variables
+        common_src = hcho_src
+
+
+        lat = common_src['geolocation']['latitude'][:]
+        lon = common_src['geolocation']['longitude'][:]
+        terrain_height = common_src['geolocation']['terrain_height'][:]
+    
+        solar_zenith_angle = common_src['geolocation']['solar_zenith_angle'][:]
+        viewing_zenith_angle = common_src['geolocation']['viewing_zenith_angle'][:]
+        relative_azimuth_angle = common_src['geolocation']['relative_azimuth_angle'][:]
+        
+        surface_pressure = common_src['geolocation']['surface_pressure'][:]
+        tropopause_pressure = common_src['geolocation']['tropopause_pressure'][:]
+
+        albedo = common_src['support_data']['albedo'][:]
+
+        hcho_gas_profile = hcho_src['support_data']['gas_profile'][:]
+        o3_gas_profile = o3_src['support_data']['gas_profile'][:]
+        
+        air_partial_col = la_src['Profile']['AirPartialColumn'][:]
+
+
+        Ar_gas_mixing_ratio = la_src['Profile']['Ar_GasMixingRatio'][:]
+        BrO_gas_mixing_ratio = la_src['Profile']['BrO_GasMixingRatio'][:]
+        CO2_gas_mixing_ratio = la_src['Profile']['CO2_GasMixingRatio'][:]
+        GLYX_gas_mixing_ratio = la_src['Profile']['GLYX_GasMixingRatio'][:]
+        H2O_gas_mixing_ratio = la_src['Profile']['H2O_GasMixingRatio'][:]
+        HCHO_gas_mixing_ratio = la_src['Profile']['HCHO_GasMixingRatio'][:]
+        N2_gas_mixing_ratio = la_src['Profile']['N2_GasMixingRatio'][:]
+        NO2_gas_mixing_ratio = la_src['Profile']['NO2_GasMixingRatio'][:]
+        O2_gas_mixing_ratio = la_src['Profile']['O2_GasMixingRatio'][:]
+        O3_gas_mixing_ratio = la_src['Profile']['O3_GasMixingRatio'][:]
+        SO2_gas_mixing_ratio = la_src['Profile']['SO2_GasMixingRatio'][:]
+
+        Ar_amf = la_src['RTM_Band1']['Ar_AMF'][:]
+        BrO_amf = la_src['RTM_Band1']['BrO_AMF'][:]
+        CO2_amf = la_src['RTM_Band1']['CO2_AMF'][:]
+        GLYX_amf = la_src['RTM_Band1']['GLYX_AMF'][:]
+        H2O_amf = la_src['RTM_Band1']['H2O_AMF'][:]
+        HCHO_amf = la_src['RTM_Band1']['HCHO_AMF'][:]
+        N2_amf = la_src['RTM_Band1']['N2_AMF'][:]
+        NO2_amf = la_src['RTM_Band1']['NO2_AMF'][:]
+        O2_amf = la_src['RTM_Band1']['O2_AMF'][:]
+        O3_amf = la_src['RTM_Band1']['O3_AMF'][:]
+        SO2_amf = la_src['RTM_Band1']['SO2_AMF'][:]
+
+        hcho_gas_profile = hcho_src['true_quantities']['gas_profile'][:]
+        
+
+    Ar_slant_col = np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf
+    BrO_slant_col = np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf
+    GLYX_slant_col = np.sum(GLYX_gas_mixing_ratio * air_partial_col, axis=0) * GLYX_amf
+    H2O_slant_col = np.sum(H2O_gas_mixing_ratio * air_partial_col, axis=0) * H2O_amf
+    HCHO_slant_col = np.sum(HCHO_gas_mixing_ratio * air_partial_col, axis=0) * HCHO_amf
+    N2_slant_col = np.sum(N2_gas_mixing_ratio * air_partial_col, axis=0) * N2_amf
+    NO2_slant_col = np.sum(NO2_gas_mixing_ratio * air_partial_col, axis=0) * NO2_amf
+    O2_slant_col = np.sum(O2_gas_mixing_ratio * air_partial_col, axis=0) * O2_amf
+    O3_slant_col = np.sum(O3_gas_mixing_ratio * air_partial_col, axis=0) * O3_amf
+    SO2_slant_col = np.sum(SO2_gas_mixing_ratio * air_partial_col, axis=0) * SO2_amf
+
+
+    feature_map = np.stack((
+        np.deg2rad(solar_zenith_angle), #normal
+        np.deg2rad(viewing_zenith_angle), #normal
+        np.deg2rad(relative_azimuth_angle), #normal
+        #transform_func(surface_pressure),  #skewed
+        #transform_func(tropopause_pressure), #skewed
+        #terrain_height,   #skewed
+        #albedo,  #skewed
+
+        #transform_func(Ar_slant_col[0]), #skewed
+        #transform_func(BrO_slant_col[0]), #skewed
+        #transform_func(GLYX_slant_col[0]), #skewed
+        #transform_func(H2O_slant_col[0]), #skewed
+        #transform_func(HCHO_slant_col[0]), #skewed
+        #transform_func(N2_slant_col[0]), #skewe
+        #transform_func(NO2_slant_col[0]), #skewed
+        #transform_func(O2_slant_col[0]), #skewed
+        #transform_func(O3_slant_col[0]), #skewed
+        #transform_func(SO2_slant_col[0]) #skewed
+    ), axis=-1)
+
+    training_examples = torch.from_numpy(feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2]))
+    HCHO_amf_labels = torch.from_numpy(HCHO_amf[0].reshape(HCHO_amf[0].shape[0] * HCHO_amf[0].shape[1]))
+
+    learning_data = utils.data.TensorDataset(training_examples, HCHO_amf_labels)
+
+    def evaluate_model(model, test_set, device=None):
+
+        if device is None:
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+
+        
+        with torch.no_grad():
+            x, y= learning_data.tensors[0].float().to(device), learning_data.tensors[1].float().to(device)
+
+            pred_AMF = model(x)
+            test_loss = torch.sqrt(F.mse_loss(torch.flatten(pred_AMF), y))
+
+        plt.plot(np.arange(len(learning_data.tensors[0])), pred_AMF, color='red')
+        plt.plot(np.arange(len(learning_data.tensors[0])), y, color='green')
+
+        plt.imshow(pred_AMF.reshape(feature_map.shape[0], feature_map.shape[1]), vmin=0.5, vmax=1.5)
+        plt.colorbar()
+        plt.show()
+        
+        return test_loss
+
+
+    run = wandb.init(project=f"tempo_ml_training")
+
+    max_epochs = 60000
+
+    device = 'cpu'
+
+    input_size = len(learning_data[0][0])
+
+    model = NN_layer.AMFNet(input_size, 10)
+    adamWOptim = torch.optim.AdamW(model.parameters(), lr=1e-5)
+
+    previous_loss = 0
+
+
+
+    run = wandb.init(project=f"tempo_ml_training")
+
+    max_epochs = 120000
+
+    device = 'cpu'
+
+    input_size = len(learning_data[0][0])
+
+    model = NN_layer.AMFNet(input_size, 10)
+    adamWOptim = torch.optim.AdamW(model.parameters(), lr=1e-5)
+
+    previous_loss = 0
+
+    epsilon = 1e-45
+
+    for epoch in range(max_epochs):
+
+        x, y = learning_data.tensors[0].float().to(device), learning_data.tensors[1].float().to(device)
+        pred_AMF = model(x)
+
+        #print(model.fc1.weight)
+        
+        loss = torch.sqrt(F.mse_loss(torch.flatten(pred_AMF), y))
+
+        if torch.abs(loss - previous_loss) < epsilon:
+            break
+        previous_loss = loss
+        # zero out gradients
+        adamWOptim.zero_grad() 
+        # 4. Backpropagate the loss
+        loss.backward()
+        # 5. Update the parameters
+        adamWOptim.step()
+
+        wandb.log(
+            {
+                "train_loss": loss,
+                "learning_rate": adamWOptim.param_groups[0]["lr"],
+                "epoch": epoch,
+            },
+            step=epoch,
+        )
+
+        # if epoch % 200 == 0:
+        #     print(loss)
+
+        # if epoch > 10000 and (loss - previous_loss) <= 1e-20:
+        #     break
+        
+        #previous_loss = loss
+
+
+    test_loss = evaluate_model(model, learning_data)
+
+    print(loss, test_loss)
+    run.finish()
+
+
+if __name__ == "__main__":
+    main()
