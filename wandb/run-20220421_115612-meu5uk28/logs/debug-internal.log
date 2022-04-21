@@ -4,3 +4,4 @@
 2022-04-21 11:56:15,953 DEBUG   SenderThread:14660 [sender.py:send():235] send: run
 2022-04-21 11:56:16,540 INFO    SenderThread:14660 [dir_watcher.py:__init__():169] watching files in: c:\Users\wasii\Documents\CodingProjects\TEMPO_Work\wandb\run-20220421_115612-meu5uk28\files
 2022-04-21 11:56:16,541 INFO    SenderThread:14660 [sender.py:_start_run_threads():812] run started: meu5uk28 with start time 1650556572
+2022-04-21 13:58:06,048 WARNING FileStreamThread:14660 [file_stream.py:request_with_retry():594] requests_with_retry encountered retryable exception: 500 Server Error: Internal Server Error for url: https://api.wandb.ai/files/wasiim/tempo_ml_training/meu5uk28/file_stream. func: <bound method Session.post of <requests.sessions.Session object at 0x00000236B5247310>>, args: ('https://api.wandb.ai/files/wasiim/tempo_ml_training/meu5uk28/file_stream',), kwargs: {'json': {'complete': False, 'failed': False, 'dropped': 0, 'uploaded': []}}

@@ -74,7 +74,7 @@ def main():
 
         hcho_gas_profile = hcho_src['support_data']['gas_profile'][:]
         o3_gas_profile = o3_src['support_data']['gas_profile'][:]
-        
+
         air_partial_col = la_src['Profile']['AirPartialColumn'][:]
 
 
@@ -223,8 +223,8 @@ def main():
             step=epoch,
         )
 
-        # if epoch % 200 == 0:
-        #     print(loss)
+        if epoch % 200 == 0:
+            print(loss)
 
         # if epoch > 10000 and (loss - previous_loss) <= 1e-20:
         #     break
