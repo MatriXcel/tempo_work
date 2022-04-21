@@ -34,6 +34,27 @@ def parse_args():
     return args
 
 
+def evaluate_model(model, learning_data, feature_map, device=None):
+
+    if device is None:
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    
+    with torch.no_grad():
+        x, y= learning_data.tensors[0].float().to(device), learning_data.tensors[1].float().to(device)
+
+        pred_AMF = model(x)
+        test_loss = torch.sqrt(F.mse_loss(torch.flatten(pred_AMF), y))
+
+   # plt.plot(np.arange(len(learning_data.tensors[0])), pred_AMF, color='red')
+    #plt.plot(np.arange(len(learning_data.tensors[0])), y, color='green')
+
+  #  plt.imshow(pred_AMF.reshape(feature_map.shape[0], feature_map.shape[1]), vmin=0.5, vmax=1.5)
+    #plt.colorbar()
+    #plt.show()
+    
+    return test_loss
+
 
 def main():
     args = parse_args()
@@ -143,26 +164,6 @@ def main():
 
     learning_data = utils.data.TensorDataset(training_examples, HCHO_amf_labels)
 
-    def evaluate_model(model, test_set, device=None):
-
-        if device is None:
-            device = "cuda" if torch.cuda.is_available() else "cpu"
-
-        
-        with torch.no_grad():
-            x, y= learning_data.tensors[0].float().to(device), learning_data.tensors[1].float().to(device)
-
-            pred_AMF = model(x)
-            test_loss = torch.sqrt(F.mse_loss(torch.flatten(pred_AMF), y))
-
-        plt.plot(np.arange(len(learning_data.tensors[0])), pred_AMF, color='red')
-        plt.plot(np.arange(len(learning_data.tensors[0])), y, color='green')
-
-        plt.imshow(pred_AMF.reshape(feature_map.shape[0], feature_map.shape[1]), vmin=0.5, vmax=1.5)
-        plt.colorbar()
-        plt.show()
-        
-        return test_loss
 
 
     run = wandb.init(project=f"tempo_ml_training")
@@ -193,7 +194,7 @@ def main():
 
     previous_loss = 0
 
-    epsilon = 1e-45
+    epsilon = 1e-50
 
     for epoch in range(max_epochs):
 
@@ -206,6 +207,7 @@ def main():
 
         if torch.abs(loss - previous_loss) < epsilon:
             break
+
         previous_loss = loss
         # zero out gradients
         adamWOptim.zero_grad() 
@@ -232,7 +234,7 @@ def main():
         #previous_loss = loss
 
 
-    test_loss = evaluate_model(model, learning_data)
+    test_loss = evaluate_model(model, learning_data, feature_map)
 
     print(loss, test_loss)
     run.finish()
