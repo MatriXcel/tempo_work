@@ -74,6 +74,12 @@ def main():
     # https://unidata.github.io/netcdf4-python/ you should get some
     # familiarity about how to work with them
 
+    if torch.cuda.is_available():
+        device = 'gpu'
+        print("GPU is available, using gpu")
+    else:
+        device = 'cpu'
+        print("GPU unaivailable, using CPU")
 
     with Dataset(hcho_fp,'r') as hcho_src, Dataset(o3_fp, 'r') as o3_src, Dataset(la_rtm_fp) as la_src:
         # Read geolocation variables
@@ -139,7 +145,7 @@ def main():
 
 
     transform_func = np.log
-    
+
     feature_map = np.stack((
         np.deg2rad(solar_zenith_angle), #normal
         np.deg2rad(viewing_zenith_angle), #normal
@@ -172,7 +178,6 @@ def main():
 
     max_epochs = 60000
 
-    device = 'cpu'
 
     input_size = len(learning_data[0][0])
 
@@ -186,9 +191,7 @@ def main():
     run = wandb.init(project=f"tempo_ml_training")
 
     max_epochs = 120000
-
-    device = 'cpu'
-
+    
     input_size = len(learning_data[0][0])
 
     model = NN_layer.AMFNet(input_size, 10)
