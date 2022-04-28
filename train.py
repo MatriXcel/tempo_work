@@ -175,7 +175,7 @@ def main():
             ), axis=-1)
             print("this one passed")
             successes += 1
-        except (ValueError, RuntimeWarning) as e:
+        except:
             return 1
 
     print("total number of successes ", successes)
