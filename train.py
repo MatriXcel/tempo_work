@@ -157,7 +157,7 @@ def main():
                 np.deg2rad(solar_zenith_angle), #normal
                 np.deg2rad(viewing_zenith_angle), #normal
                 np.deg2rad(relative_azimuth_angle), #normal
-                ##transform_func(surface_pressure),  #skewed
+                transform_func(surface_pressure),  #skewed
                 #transform_func(tropopause_pressure), #skewed
                 #terrain_height,   #skewed
                 albedo,  #skewed
@@ -169,7 +169,7 @@ def main():
                 #transform_func(HCHO_slant_col[0]), #skewed
                 #transform_func(N2_slant_col[0]), #skewe
                 #transform_func(NO2_slant_col[0]), #skewed
-                ##transform_func(O2_slant_col[0]), #skewed
+                transform_func(O2_slant_col[0]), #skewed
                 #transform_func(O3_slant_col[0]), #skewed
                 #transform_func(SO2_slant_col[0]) #skewed
             ), axis=-1)
