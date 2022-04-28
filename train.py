@@ -214,7 +214,7 @@ def main():
     print("out of ", len(file_names))
 
 
-    training_tensor = torch.from_numpy(np.array(all_training_examples))
+    training_tensor = torch.from_numpy(np.array(all_training_examples).astype(np.float64))
     training_tensor = training_tensor.flatten(0, 1)
 
     label_tensor = torch.FloatTensor(all_training_labels).flatten()
