@@ -197,9 +197,12 @@ def main():
 
              training_examples = feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2])
              HCHO_amf_labels = HCHO_amf[0].reshape(HCHO_amf[0].shape[0] * HCHO_amf[0].shape[1])
+            
+             print("HCHO amf", HCHO_amf[0])
+             print("HCHO amf labels", HCHO_amf_labels.shape)
 
              all_training_examples.append(training_examples)
-             all_training_labels.append(HCHO_amf_labels.tolist())
+             all_training_labels.append(HCHO_amf_labels)
 
              successes += 1
 
