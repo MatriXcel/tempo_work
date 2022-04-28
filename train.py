@@ -219,7 +219,10 @@ def main():
     training_tensor = training_tensor.flatten(0, 1)
     
    # [ [], [], [] ]
-    print("elemtn shape is ", all_training_labels[0].shape)
+    print("elemtn shape is", all_training_labels[0].shape)
+    print("length", len(all_training_labels))
+    print("array shape is", np.asarray(all_training_labels).shape)
+
     label_tensor = torch.from_numpy(np.asarray(all_training_labels))
     label_tensor = label_tensor.flatten()
 
