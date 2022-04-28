@@ -151,8 +151,8 @@ def main():
 
 
         transform_func = np.log
-        np.seterr(divide = 'ignore') 
-        
+        np.seterr(multiply = 'ignore') 
+
         try:
             feature_map = np.stack((
                 np.deg2rad(solar_zenith_angle), #normal
