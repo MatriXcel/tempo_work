@@ -134,7 +134,6 @@ def main():
             O3_amf = la_src['RTM_Band1']['O3_AMF'][:]
             SO2_amf = la_src['RTM_Band1']['SO2_AMF'][:]
 
-            hcho_gas_profile = hcho_src['true_quantities']['gas_profile'][:]
             
 
         Ar_slant_col = np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf
