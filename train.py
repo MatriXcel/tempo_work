@@ -198,7 +198,7 @@ def main():
              training_examples = feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2])
              HCHO_amf_labels = HCHO_amf[0].reshape(HCHO_amf[0].shape[0] * HCHO_amf[0].shape[1])
             
-             print("HCHO amf", HCHO_amf[0])
+             print("HCHO amf", HCHO_amf[0].shape)
              print("HCHO amf labels", HCHO_amf_labels.shape)
 
              all_training_examples.append(training_examples)
@@ -222,7 +222,7 @@ def main():
     training_tensor = training_tensor.flatten(0, 1)
     
    # [ [], [], [] ]
-    #print("elemtn shape is", all_training_labels[0].shape)
+    print("elemtn shape is", all_training_labels[0].shape)
     print("length", len(all_training_labels))
     print("array shape is", np.asarray(all_training_labels).shape)
 
