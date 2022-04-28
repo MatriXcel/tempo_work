@@ -150,6 +150,9 @@ def main():
             O3_amf = la_src['RTM_Band1']['O3_AMF'][:]
             SO2_amf = la_src['RTM_Band1']['SO2_AMF'][:]
 
+            #add filter/flag that selects pixels for which there is proper data
+            #expected range is around 0-20, start with that, just look at AMF for formaldehyde
+            
         
         data_type = np.float64
 
@@ -201,7 +204,7 @@ def main():
 
              filenames_used.append(filename)
 
-             if successes == 100:
+             if successes == 3:
                 break
         except:
             return 1
