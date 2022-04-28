@@ -174,7 +174,7 @@ def main():
                 #transform_func(SO2_slant_col[0]) #skewed
             ), axis=-1)
             print("this one passed")
-            success += 1
+            successes += 1
         except ValueError:
             return 1
 
