@@ -200,6 +200,7 @@ def main():
 
              all_training_examples.append(training_examples)
              all_training_labels.append(HCHO_amf_labels)
+
              successes += 1
 
              filenames_used.append(filename)
@@ -213,11 +214,12 @@ def main():
     print("total number of successes ", successes)
     print("out of ", len(file_names))
 
-  
+    
     training_tensor = torch.from_numpy(np.array(all_training_examples))
     training_tensor = training_tensor.flatten(0, 1)
     
-    [ [], [], [] ]
+   # [ [], [], [] ]
+    print("elemtn shape is ", all_training_labels[0].shape)
     label_tensor = torch.from_numpy(np.asarray(all_training_labels))
     label_tensor = label_tensor.flatten()
 
