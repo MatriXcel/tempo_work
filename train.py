@@ -199,7 +199,7 @@ def main():
              HCHO_amf_labels = HCHO_amf[0].reshape(HCHO_amf[0].shape[0] * HCHO_amf[0].shape[1])
 
              all_training_examples.append(training_examples)
-             all_training_labels.append(HCHO_amf_labels)
+             all_training_labels.append(HCHO_amf_labels.tolist())
 
              successes += 1
 
