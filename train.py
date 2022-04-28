@@ -13,6 +13,7 @@ import tqdm
 import wandb
 
 import argparse
+import os
 
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
@@ -64,7 +65,8 @@ def main():
     o3_fp = './TEMPO_20130704_17h_LA1_O3.nc'
     #la_rtm_fp = './TEMPO_20130704_17h_LA1_rtm.nc'
 
-    la_rtm_fp = args.map_file
+    map_folder = args.map_file
+    file_names = os.listdir(map_folder)
     # Open the file. I like to do it using with to guarantee
     # that it will be closed after we are done reading
     # netCDF files are organized in group (which can have subgroups)
@@ -81,10 +83,9 @@ def main():
         device = 'cpu'
         print("GPU unaivailable, using CPU")
 
-    with Dataset(hcho_fp,'r') as hcho_src, Dataset(o3_fp, 'r') as o3_src, Dataset(la_rtm_fp) as la_src:
+    with Dataset(hcho_fp,'r') as hcho_src, Dataset(o3_fp, 'r') as o3_src:
         # Read geolocation variables
         common_src = hcho_src
-
 
         lat = common_src['geolocation']['latitude'][:]
         lon = common_src['geolocation']['longitude'][:]
@@ -102,70 +103,80 @@ def main():
         hcho_gas_profile = hcho_src['support_data']['gas_profile'][:]
         o3_gas_profile = o3_src['support_data']['gas_profile'][:]
 
-        air_partial_col = la_src['Profile']['AirPartialColumn'][:]
+    all_feature_maps = []
+
+    for filename in file_names:
+        with Dataset(os.path.join(map_folder, filename),'r') as la_src:
+            air_partial_col = la_src['Profile']['AirPartialColumn'][:]
 
 
-        Ar_gas_mixing_ratio = la_src['Profile']['Ar_GasMixingRatio'][:]
-        BrO_gas_mixing_ratio = la_src['Profile']['BrO_GasMixingRatio'][:]
-        CO2_gas_mixing_ratio = la_src['Profile']['CO2_GasMixingRatio'][:]
-        GLYX_gas_mixing_ratio = la_src['Profile']['GLYX_GasMixingRatio'][:]
-        H2O_gas_mixing_ratio = la_src['Profile']['H2O_GasMixingRatio'][:]
-        HCHO_gas_mixing_ratio = la_src['Profile']['HCHO_GasMixingRatio'][:]
-        N2_gas_mixing_ratio = la_src['Profile']['N2_GasMixingRatio'][:]
-        NO2_gas_mixing_ratio = la_src['Profile']['NO2_GasMixingRatio'][:]
-        O2_gas_mixing_ratio = la_src['Profile']['O2_GasMixingRatio'][:]
-        O3_gas_mixing_ratio = la_src['Profile']['O3_GasMixingRatio'][:]
-        SO2_gas_mixing_ratio = la_src['Profile']['SO2_GasMixingRatio'][:]
+            Ar_gas_mixing_ratio = la_src['Profile']['Ar_GasMixingRatio'][:]
+            BrO_gas_mixing_ratio = la_src['Profile']['BrO_GasMixingRatio'][:]
+            CO2_gas_mixing_ratio = la_src['Profile']['CO2_GasMixingRatio'][:]
+            GLYX_gas_mixing_ratio = la_src['Profile']['GLYX_GasMixingRatio'][:]
+            H2O_gas_mixing_ratio = la_src['Profile']['H2O_GasMixingRatio'][:]
+            HCHO_gas_mixing_ratio = la_src['Profile']['HCHO_GasMixingRatio'][:]
+            N2_gas_mixing_ratio = la_src['Profile']['N2_GasMixingRatio'][:]
+            NO2_gas_mixing_ratio = la_src['Profile']['NO2_GasMixingRatio'][:]
+            O2_gas_mixing_ratio = la_src['Profile']['O2_GasMixingRatio'][:]
+            O3_gas_mixing_ratio = la_src['Profile']['O3_GasMixingRatio'][:]
+            SO2_gas_mixing_ratio = la_src['Profile']['SO2_GasMixingRatio'][:]
 
-        Ar_amf = la_src['RTM_Band1']['Ar_AMF'][:]
-        BrO_amf = la_src['RTM_Band1']['BrO_AMF'][:]
-        CO2_amf = la_src['RTM_Band1']['CO2_AMF'][:]
-        GLYX_amf = la_src['RTM_Band1']['GLYX_AMF'][:]
-        H2O_amf = la_src['RTM_Band1']['H2O_AMF'][:]
-        HCHO_amf = la_src['RTM_Band1']['HCHO_AMF'][:]
-        N2_amf = la_src['RTM_Band1']['N2_AMF'][:]
-        NO2_amf = la_src['RTM_Band1']['NO2_AMF'][:]
-        O2_amf = la_src['RTM_Band1']['O2_AMF'][:]
-        O3_amf = la_src['RTM_Band1']['O3_AMF'][:]
-        SO2_amf = la_src['RTM_Band1']['SO2_AMF'][:]
+            Ar_amf = la_src['RTM_Band1']['Ar_AMF'][:]
+            BrO_amf = la_src['RTM_Band1']['BrO_AMF'][:]
+            CO2_amf = la_src['RTM_Band1']['CO2_AMF'][:]
+            GLYX_amf = la_src['RTM_Band1']['GLYX_AMF'][:]
+            H2O_amf = la_src['RTM_Band1']['H2O_AMF'][:]
+            HCHO_amf = la_src['RTM_Band1']['HCHO_AMF'][:]
+            N2_amf = la_src['RTM_Band1']['N2_AMF'][:]
+            NO2_amf = la_src['RTM_Band1']['NO2_AMF'][:]
+            O2_amf = la_src['RTM_Band1']['O2_AMF'][:]
+            O3_amf = la_src['RTM_Band1']['O3_AMF'][:]
+            SO2_amf = la_src['RTM_Band1']['SO2_AMF'][:]
 
-        hcho_gas_profile = hcho_src['true_quantities']['gas_profile'][:]
-        
+            hcho_gas_profile = hcho_src['true_quantities']['gas_profile'][:]
+            
 
-    Ar_slant_col = np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf
-    BrO_slant_col = np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf
-    GLYX_slant_col = np.sum(GLYX_gas_mixing_ratio * air_partial_col, axis=0) * GLYX_amf
-    H2O_slant_col = np.sum(H2O_gas_mixing_ratio * air_partial_col, axis=0) * H2O_amf
-    HCHO_slant_col = np.sum(HCHO_gas_mixing_ratio * air_partial_col, axis=0) * HCHO_amf
-    N2_slant_col = np.sum(N2_gas_mixing_ratio * air_partial_col, axis=0) * N2_amf
-    NO2_slant_col = np.sum(NO2_gas_mixing_ratio * air_partial_col, axis=0) * NO2_amf
-    O2_slant_col = np.sum(O2_gas_mixing_ratio * air_partial_col, axis=0) * O2_amf
-    O3_slant_col = np.sum(O3_gas_mixing_ratio * air_partial_col, axis=0) * O3_amf
-    SO2_slant_col = np.sum(SO2_gas_mixing_ratio * air_partial_col, axis=0) * SO2_amf
+        Ar_slant_col = np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf
+        BrO_slant_col = np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf
+        GLYX_slant_col = np.sum(GLYX_gas_mixing_ratio * air_partial_col, axis=0) * GLYX_amf
+        H2O_slant_col = np.sum(H2O_gas_mixing_ratio * air_partial_col, axis=0) * H2O_amf
+        HCHO_slant_col = np.sum(HCHO_gas_mixing_ratio * air_partial_col, axis=0) * HCHO_amf
+        N2_slant_col = np.sum(N2_gas_mixing_ratio * air_partial_col, axis=0) * N2_amf
+        NO2_slant_col = np.sum(NO2_gas_mixing_ratio * air_partial_col, axis=0) * NO2_amf
+        O2_slant_col = np.sum(O2_gas_mixing_ratio * air_partial_col, axis=0) * O2_amf
+        O3_slant_col = np.sum(O3_gas_mixing_ratio * air_partial_col, axis=0) * O3_amf
+        SO2_slant_col = np.sum(SO2_gas_mixing_ratio * air_partial_col, axis=0) * SO2_amf
 
 
-    transform_func = np.log
+        transform_func = np.log
 
-    feature_map = np.stack((
-        np.deg2rad(solar_zenith_angle), #normal
-        np.deg2rad(viewing_zenith_angle), #normal
-        np.deg2rad(relative_azimuth_angle), #normal
-        transform_func(surface_pressure),  #skewed
-        #transform_func(tropopause_pressure), #skewed
-        #terrain_height,   #skewed
-        albedo,  #skewed
+        try:
+            feature_map = np.stack((
+                np.deg2rad(solar_zenith_angle), #normal
+                np.deg2rad(viewing_zenith_angle), #normal
+                np.deg2rad(relative_azimuth_angle), #normal
+                transform_func(surface_pressure),  #skewed
+                #transform_func(tropopause_pressure), #skewed
+                #terrain_height,   #skewed
+                albedo,  #skewed
 
-        #transform_func(Ar_slant_col[0]), #skewed
-        #transform_func(BrO_slant_col[0]), #skewed
-        #transform_func(GLYX_slant_col[0]), #skewed
-        #transform_func(H2O_slant_col[0]), #skewed
-        #transform_func(HCHO_slant_col[0]), #skewed
-        #transform_func(N2_slant_col[0]), #skewe
-        #transform_func(NO2_slant_col[0]), #skewed
-        transform_func(O2_slant_col[0]), #skewed
-        #transform_func(O3_slant_col[0]), #skewed
-        #transform_func(SO2_slant_col[0]) #skewed
-    ), axis=-1)
+                #transform_func(Ar_slant_col[0]), #skewed
+                #transform_func(BrO_slant_col[0]), #skewed
+                #transform_func(GLYX_slant_col[0]), #skewed
+                #transform_func(H2O_slant_col[0]), #skewed
+                #transform_func(HCHO_slant_col[0]), #skewed
+                #transform_func(N2_slant_col[0]), #skewe
+                #transform_func(NO2_slant_col[0]), #skewed
+                transform_func(O2_slant_col[0]), #skewed
+                #transform_func(O3_slant_col[0]), #skewed
+                #transform_func(SO2_slant_col[0]) #skewed
+            ), axis=-1)
+            print("this one passed")
+        except ValueError:
+            return 1
+
+    all_feature_maps.append(feature_map)
 
     training_examples = torch.from_numpy(feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2]))
     HCHO_amf_labels = torch.from_numpy(HCHO_amf[0].reshape(HCHO_amf[0].shape[0] * HCHO_amf[0].shape[1]))
