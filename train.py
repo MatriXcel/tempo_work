@@ -136,23 +136,24 @@ def main():
             O3_amf = la_src['RTM_Band1']['O3_AMF'][:]
             SO2_amf = la_src['RTM_Band1']['SO2_AMF'][:]
 
-            
+        
+        data_type = np.float64
 
-        Ar_slant_col = (np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf).astype(np.float128)
-        BrO_slant_col = (np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf).astype(np.float128)
-        GLYX_slant_col = (np.sum(GLYX_gas_mixing_ratio * air_partial_col, axis=0) * GLYX_amf).astype(np.float128)
-        H2O_slant_col = (np.sum(H2O_gas_mixing_ratio * air_partial_col, axis=0) * H2O_amf).astype(np.float128)
-        HCHO_slant_col = (np.sum(HCHO_gas_mixing_ratio * air_partial_col, axis=0) * HCHO_amf).astype(np.float128)
-        N2_slant_col = (np.sum(N2_gas_mixing_ratio * air_partial_col, axis=0) * N2_amf).astype(np.float128)
-        NO2_slant_col = (np.sum(NO2_gas_mixing_ratio * air_partial_col, axis=0) * NO2_amf).astype(np.float128)
-        O2_slant_col = (np.sum(O2_gas_mixing_ratio * air_partial_col, axis=0) * O2_amf).astype(np.float128)
-        O3_slant_col = (np.sum(O3_gas_mixing_ratio * air_partial_col, axis=0) * O3_amf).astype(np.float128)
-        SO2_slant_col = (np.sum(SO2_gas_mixing_ratio * air_partial_col, axis=0) * SO2_amf).astype(np.float128)
+        Ar_slant_col = (np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf).astype(data_type)
+        BrO_slant_col = (np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf).astype(data_type)
+        GLYX_slant_col = (np.sum(GLYX_gas_mixing_ratio * air_partial_col, axis=0) * GLYX_amf).astype(data_type)
+        H2O_slant_col = (np.sum(H2O_gas_mixing_ratio * air_partial_col, axis=0) * H2O_amf).astype(data_type)
+        HCHO_slant_col = (np.sum(HCHO_gas_mixing_ratio * air_partial_col, axis=0) * HCHO_amf).astype(data_type)
+        N2_slant_col = (np.sum(N2_gas_mixing_ratio * air_partial_col, axis=0) * N2_amf).astype(data_type)
+        NO2_slant_col = (np.sum(NO2_gas_mixing_ratio * air_partial_col, axis=0) * NO2_amf).astype(data_type)
+        O2_slant_col = (np.sum(O2_gas_mixing_ratio * air_partial_col, axis=0) * O2_amf).astype(data_type)
+        O3_slant_col = (np.sum(O3_gas_mixing_ratio * air_partial_col, axis=0) * O3_amf).astype(data_type)
+        SO2_slant_col = (np.sum(SO2_gas_mixing_ratio * air_partial_col, axis=0) * SO2_amf).astype(data_type)
 
 
         transform_func = np.log
         #np.seterr(all = 'ignore') 
-        with np.errstate(divide='ignore'):
+        with np.errstate(divide='ignore', over='ignore'):
             try:
                 feature_map = np.stack((
                     np.deg2rad(solar_zenith_angle), #normal
@@ -178,7 +179,7 @@ def main():
                 successes += 1
             except:
                 return 1
-        
+
 
     print("total number of successes ", successes)
     all_feature_maps.append(feature_map)
