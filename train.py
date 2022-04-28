@@ -104,9 +104,11 @@ def main():
         o3_gas_profile = o3_src['support_data']['gas_profile'][:]
 
     all_feature_maps = []
+    successes = 0
 
     for filename in file_names:
         with Dataset(os.path.join(map_folder, filename),'r') as la_src:
+            print(filename, "is running")
             air_partial_col = la_src['Profile']['AirPartialColumn'][:]
 
 
@@ -172,9 +174,11 @@ def main():
                 #transform_func(SO2_slant_col[0]) #skewed
             ), axis=-1)
             print("this one passed")
+            success += 1
         except ValueError:
             return 1
 
+    print("total number of successes ", successes)
     all_feature_maps.append(feature_map)
 
     training_examples = torch.from_numpy(feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2]))
