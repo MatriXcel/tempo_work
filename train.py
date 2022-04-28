@@ -117,8 +117,10 @@ def main():
 
     successes = 0
     filenames_used = []
+    
+    random.shuffle(file_names)
 
-    for filename in random.shuffle(file_names):
+    for filename in file_names:
         with Dataset(os.path.join(map_folder, filename),'r') as la_src:
             print(filename, "is running")
             air_partial_col = la_src['Profile']['AirPartialColumn'][:]
