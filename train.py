@@ -218,7 +218,8 @@ def main():
     training_tensor = training_tensor.flatten(0, 1)
     
     [ [], [], [] ]
-    label_tensor = torch.from_numpy(np.array(all_training_labels).flatten())
+    label_tensor = torch.from_numpy(np.asarray(all_training_labels))
+    label_tensor = label_tensor.flatten()
 
     torch.save(training_tensor, 'training_tensor.pt')
     torch.save(label_tensor, 'label_tensor.pt')
