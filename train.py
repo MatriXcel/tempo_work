@@ -153,8 +153,9 @@ def main():
 
         transform_func = np.log
         #np.seterr(all = 'ignore') 
-        with warnings.catch_warnings():
-            try:
+       
+        try:
+             with np.errstate(divide='ignore', over='ignore'):
                 feature_map = np.stack((
                     np.deg2rad(solar_zenith_angle), #normal
                     np.deg2rad(viewing_zenith_angle), #normal
@@ -175,15 +176,15 @@ def main():
                     #transform_func(O3_slant_col[0]), #skewed
                     #transform_func(SO2_slant_col[0]) #skewed
                 ), axis=-1)
-                print("this one passed")
-                successes += 1
-            except:
-                return 1
+             print("this one passed")
+             successes += 1
+        except:
+            return 1
 
 
     print("total number of successes ", successes)
     return
-
+    
     all_feature_maps.append(feature_map)
 
     training_examples = torch.from_numpy(feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2]))
