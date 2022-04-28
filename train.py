@@ -213,7 +213,10 @@ def main():
     print("total number of successes ", successes)
     print("out of ", len(file_names))
 
-    training_tensor = torch.FloatTensor(all_training_examples).flatten(0, 1)
+
+    training_tensor = torch.FloatTensor(all_training_examples)
+    training_tensor = training_tensor.flatten(0, 1)
+    
     label_tensor = torch.FloatTensor(all_training_labels).flatten()
 
     torch.save(training_tensor, 'training_tensor.pt')
