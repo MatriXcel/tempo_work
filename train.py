@@ -103,7 +103,9 @@ def main():
         hcho_gas_profile = hcho_src['support_data']['gas_profile'][:]
         o3_gas_profile = o3_src['support_data']['gas_profile'][:]
 
-    all_feature_maps = []
+    all_training_examples = []
+    all_training_labels = []
+
     successes = 0
 
     for filename in file_names:
@@ -177,18 +179,30 @@ def main():
                     #transform_func(SO2_slant_col[0]) #skewed
                 ), axis=-1)
              print("this one passed")
+
+             training_examples = torch.from_numpy(feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2]))
+             HCHO_amf_labels = torch.from_numpy(HCHO_amf[0].reshape(HCHO_amf[0].shape[0] * HCHO_amf[0].shape[1]))
+
+             all_training_examples.append(training_examples)
+             all_training_labels.append(HCHO_amf_labels)
              successes += 1
         except:
             return 1
 
-
+    
     print("total number of successes ", successes)
+    print("out of ", len(file_names))
+
+    training_tensor = torch.FloatTensor(all_training_examples).flatten(0, 1)
+    label_tensor = torch.FloatTensor(all_training_labels).flatten()
+
+    torch.save(training_tensor, 'training_tensor.pt')
+    torch.save(label_tensor, 'label_tensor.pt')
+
     return
     
     all_feature_maps.append(feature_map)
 
-    training_examples = torch.from_numpy(feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2]))
-    HCHO_amf_labels = torch.from_numpy(HCHO_amf[0].reshape(HCHO_amf[0].shape[0] * HCHO_amf[0].shape[1]))
 
     learning_data = utils.data.TensorDataset(training_examples, HCHO_amf_labels)
 
