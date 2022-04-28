@@ -14,6 +14,9 @@ import wandb
 
 import argparse
 import os
+import random
+
+random.seed(42)
 
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
@@ -110,8 +113,9 @@ def main():
     all_training_labels = []
 
     successes = 0
+    filenames_used = []
 
-    for filename in file_names:
+    for filename in random.shuffle(file_names):
         with Dataset(os.path.join(map_folder, filename),'r') as la_src:
             print(filename, "is running")
             air_partial_col = la_src['Profile']['AirPartialColumn'][:]
@@ -189,6 +193,9 @@ def main():
              all_training_examples.append(training_examples)
              all_training_labels.append(HCHO_amf_labels)
              successes += 1
+
+             if successes == 100:
+                break
         except:
             return 1
 
