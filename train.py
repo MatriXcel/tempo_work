@@ -152,32 +152,33 @@ def main():
 
         transform_func = np.log
         #np.seterr(all = 'ignore') 
+        with np.errstate(divide='ignore'):
+            try:
+                feature_map = np.stack((
+                    np.deg2rad(solar_zenith_angle), #normal
+                    np.deg2rad(viewing_zenith_angle), #normal
+                    np.deg2rad(relative_azimuth_angle), #normal
+                    transform_func(surface_pressure),  #skewed
+                    #transform_func(tropopause_pressure), #skewed
+                    #terrain_height,   #skewed
+                    albedo,  #skewed
 
-        try:
-            feature_map = np.stack((
-                np.deg2rad(solar_zenith_angle), #normal
-                np.deg2rad(viewing_zenith_angle), #normal
-                np.deg2rad(relative_azimuth_angle), #normal
-                transform_func(surface_pressure),  #skewed
-                #transform_func(tropopause_pressure), #skewed
-                #terrain_height,   #skewed
-                albedo,  #skewed
-
-                #transform_func(Ar_slant_col[0]), #skewed
-                #transform_func(BrO_slant_col[0]), #skewed
-                #transform_func(GLYX_slant_col[0]), #skewed
-                #transform_func(H2O_slant_col[0]), #skewed
-                #transform_func(HCHO_slant_col[0]), #skewed
-                #transform_func(N2_slant_col[0]), #skewe
-                #transform_func(NO2_slant_col[0]), #skewed
-                transform_func(O2_slant_col[0]), #skewed
-                #transform_func(O3_slant_col[0]), #skewed
-                #transform_func(SO2_slant_col[0]) #skewed
-            ), axis=-1)
-            print("this one passed")
-            successes += 1
-        except:
-            return 1
+                    #transform_func(Ar_slant_col[0]), #skewed
+                    #transform_func(BrO_slant_col[0]), #skewed
+                    #transform_func(GLYX_slant_col[0]), #skewed
+                    #transform_func(H2O_slant_col[0]), #skewed
+                    #transform_func(HCHO_slant_col[0]), #skewed
+                    #transform_func(N2_slant_col[0]), #skewe
+                    #transform_func(NO2_slant_col[0]), #skewed
+                    transform_func(O2_slant_col[0]), #skewed
+                    #transform_func(O3_slant_col[0]), #skewed
+                    #transform_func(SO2_slant_col[0]) #skewed
+                ), axis=-1)
+                print("this one passed")
+                successes += 1
+            except:
+                return 1
+        
 
     print("total number of successes ", successes)
     all_feature_maps.append(feature_map)
