@@ -202,7 +202,8 @@ def main():
              print("HCHO amf labels", HCHO_amf_labels.shape)
 
              all_training_examples.append(training_examples)
-             all_training_labels.append(HCHO_amf_labels)
+             all_training_labels.extend(HCHO_amf_labels)
+             
 
              successes += 1
 
