@@ -67,6 +67,9 @@ def main():
 
     map_folder = args.map_file
     file_names = os.listdir(map_folder)
+
+    print("out of ", len(file_names))
+
     # Open the file. I like to do it using with to guarantee
     # that it will be closed after we are done reading
     # netCDF files are organized in group (which can have subgroups)
