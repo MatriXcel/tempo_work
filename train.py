@@ -195,8 +195,8 @@ def main():
                 ), axis=-1)
              print("this one passed")
 
-             training_examples = torch.from_numpy(feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2]))
-             HCHO_amf_labels = torch.from_numpy(HCHO_amf[0].reshape(HCHO_amf[0].shape[0] * HCHO_amf[0].shape[1]))
+             training_examples = feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2])
+             HCHO_amf_labels = HCHO_amf[0].reshape(HCHO_amf[0].shape[0] * HCHO_amf[0].shape[1])
 
              all_training_examples.append(training_examples)
              all_training_labels.append(HCHO_amf_labels)
@@ -214,7 +214,7 @@ def main():
     print("out of ", len(file_names))
 
 
-    training_tensor = torch.from_numpy(np.array(all_training_examples).astype(np.float64))
+    training_tensor = torch.from_numpy(np.array(all_training_examples))
     training_tensor = training_tensor.flatten(0, 1)
 
     label_tensor = torch.FloatTensor(all_training_labels).flatten()
