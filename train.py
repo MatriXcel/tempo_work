@@ -153,7 +153,7 @@ def main():
 
         transform_func = np.log
         #np.seterr(all = 'ignore') 
-        with np.errstate(divide='ignore', over='ignore'):
+        with warnings.catch_warnings():
             try:
                 feature_map = np.stack((
                     np.deg2rad(solar_zenith_angle), #normal
@@ -183,7 +183,7 @@ def main():
 
     print("total number of successes ", successes)
     return
-    
+
     all_feature_maps.append(feature_map)
 
     training_examples = torch.from_numpy(feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2]))
