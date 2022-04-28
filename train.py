@@ -151,7 +151,7 @@ def main():
 
 
         transform_func = np.log
-        #np.seterr(multiply = 'ignore') 
+        np.seterr(all = 'ignore') 
 
         try:
             feature_map = np.stack((
