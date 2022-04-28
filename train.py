@@ -182,6 +182,8 @@ def main():
 
 
     print("total number of successes ", successes)
+    return
+    
     all_feature_maps.append(feature_map)
 
     training_examples = torch.from_numpy(feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2]))
