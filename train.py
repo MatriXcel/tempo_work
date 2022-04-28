@@ -16,6 +16,9 @@ import argparse
 import os
 import random
 
+import pickle
+
+
 random.seed(42)
 
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
@@ -194,6 +197,8 @@ def main():
              all_training_labels.append(HCHO_amf_labels)
              successes += 1
 
+             filenames_used.append(filename)
+
              if successes == 100:
                 break
         except:
@@ -208,6 +213,9 @@ def main():
 
     torch.save(training_tensor, 'training_tensor.pt')
     torch.save(label_tensor, 'label_tensor.pt')
+
+    with open('filenames_used.pkl', 'wb') as f:
+        pickle.dump(filenames_used, f)
 
     return
     
