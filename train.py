@@ -138,20 +138,20 @@ def main():
 
             
 
-        Ar_slant_col = np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf
-        BrO_slant_col = np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf
-        GLYX_slant_col = np.sum(GLYX_gas_mixing_ratio * air_partial_col, axis=0) * GLYX_amf
-        H2O_slant_col = np.sum(H2O_gas_mixing_ratio * air_partial_col, axis=0) * H2O_amf
-        HCHO_slant_col = np.sum(HCHO_gas_mixing_ratio * air_partial_col, axis=0) * HCHO_amf
-        N2_slant_col = np.sum(N2_gas_mixing_ratio * air_partial_col, axis=0) * N2_amf
-        NO2_slant_col = np.sum(NO2_gas_mixing_ratio * air_partial_col, axis=0) * NO2_amf
-        O2_slant_col = np.sum(O2_gas_mixing_ratio * air_partial_col, axis=0) * O2_amf
-        O3_slant_col = np.sum(O3_gas_mixing_ratio * air_partial_col, axis=0) * O3_amf
-        SO2_slant_col = np.sum(SO2_gas_mixing_ratio * air_partial_col, axis=0) * SO2_amf
+        Ar_slant_col = (np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf).astype(np.float64)
+        BrO_slant_col = (np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf).astype(np.float64)
+        GLYX_slant_col = (np.sum(GLYX_gas_mixing_ratio * air_partial_col, axis=0) * GLYX_amf).astype(np.float64)
+        H2O_slant_col = (np.sum(H2O_gas_mixing_ratio * air_partial_col, axis=0) * H2O_amf).astype(np.float64)
+        HCHO_slant_col = (np.sum(HCHO_gas_mixing_ratio * air_partial_col, axis=0) * HCHO_amf).astype(np.float64)
+        N2_slant_col = (np.sum(N2_gas_mixing_ratio * air_partial_col, axis=0) * N2_amf).astype(np.float64)
+        NO2_slant_col = (np.sum(NO2_gas_mixing_ratio * air_partial_col, axis=0) * NO2_amf).astype(np.float64)
+        O2_slant_col = (np.sum(O2_gas_mixing_ratio * air_partial_col, axis=0) * O2_amf).astype(np.float64)
+        O3_slant_col = (np.sum(O3_gas_mixing_ratio * air_partial_col, axis=0) * O3_amf).astype(np.float64)
+        SO2_slant_col = (np.sum(SO2_gas_mixing_ratio * air_partial_col, axis=0) * SO2_amf).astype(np.float64)
 
 
         transform_func = np.log
-        np.seterr(multiply = 'ignore') 
+        #np.seterr(multiply = 'ignore') 
 
         try:
             feature_map = np.stack((
