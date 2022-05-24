@@ -162,7 +162,7 @@ def main():
             # ((H2O_amf < 0) | (H2O_amf > 100)) & ((HCHO_amf < 0) | (HCHO_amf > 100)) & ((N2_amf < 0) | (N2_amf > 100)) & ((NO2_amf < 0) | (NO2_amf > 100)) & \
             # ((O2_amf < 0) | (O2_amf > 100)) & ((O3_amf < 0) | (O3_amf > 100)) & ((SO2_amf < 0) | (SO2_amf > 100))
 
-            invalid_matrix = ((HCHO_amf[0] < 0) | (HCHO_amf[0] > 100))
+            invalid_matrix = ((HCHO_amf< 0) | (HCHO_amf > 100))
 
             # Ar_amf = np.where(invalid_matrix, np.nan, Ar_amf)
             # BrO_amf = np.where(invalid_matrix, np.nan, BrO_amf)
