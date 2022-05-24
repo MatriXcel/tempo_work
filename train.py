@@ -212,11 +212,11 @@ def main():
             #transform_func(BrO_slant_col[0]), #skewed
             #transform_func(GLYX_slant_col[0]), #skewed
             # transform_func(H2O_slant_col[0]), #skewed
-            transform_func(HCHO_slant_col[0]), #skewed
+            transform_func(HCHO_slant_col), #skewed
             #transform_func(N2_slant_col[0]), #skewe
             #transform_func(NO2_slant_col[0]), #skewed
             #transform_func(O2_slant_col[0]), #skewed
-            #transform_func(O3_slant_col[0]), #skewed
+            transform_func(O3_slant_col), #skewed
             #transform_func(SO2_slant_col[0]) #skewed
         ), axis=-1)
         print("this one passed")
