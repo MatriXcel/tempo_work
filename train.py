@@ -181,16 +181,16 @@ def main():
         print("AR AMF shape", Ar_amf.shape)
         print("HCHO amf shape", HCHO_amf.shape)
 
-        Ar_slant_col = (np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf[0][invalid_matrix]).astype(data_type)
-        BrO_slant_col = (np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf[invalid_matrix]).astype(data_type)
-        GLYX_slant_col = (np.sum(GLYX_gas_mixing_ratio * air_partial_col, axis=0) * GLYX_amf[invalid_matrix]).astype(data_type)
-        H2O_slant_col = (np.sum(H2O_gas_mixing_ratio * air_partial_col, axis=0) * H2O_amf[invalid_matrix]).astype(data_type)
-        HCHO_slant_col = (np.sum(HCHO_gas_mixing_ratio * air_partial_col, axis=0) * HCHO_amf[invalid_matrix]).astype(data_type)
-        N2_slant_col = (np.sum(N2_gas_mixing_ratio * air_partial_col, axis=0) * N2_amf[invalid_matrix]).astype(data_type)
-        NO2_slant_col = (np.sum(NO2_gas_mixing_ratio * air_partial_col, axis=0) * NO2_amf[invalid_matrix]).astype(data_type)
-        O2_slant_col = (np.sum(O2_gas_mixing_ratio * air_partial_col, axis=0) * O2_amf[invalid_matrix]).astype(data_type)
-        O3_slant_col = (np.sum(O3_gas_mixing_ratio * air_partial_col, axis=0) * O3_amf[invalid_matrix]).astype(data_type)
-        SO2_slant_col = (np.sum(SO2_gas_mixing_ratio * air_partial_col, axis=0) * SO2_amf[invalid_matrix]).astype(data_type)
+        Ar_slant_col = (np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0)[invalid_matrix] * Ar_amf[invalid_matrix]).astype(data_type)
+        BrO_slant_col = (np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0)[invalid_matrix] * BrO_amf[invalid_matrix]).astype(data_type)
+        GLYX_slant_col = (np.sum(GLYX_gas_mixing_ratio * air_partial_col, axis=0)[invalid_matrix] * GLYX_amf[invalid_matrix]).astype(data_type)
+        H2O_slant_col = (np.sum(H2O_gas_mixing_ratio * air_partial_col, axis=0)[invalid_matrix] * H2O_amf[invalid_matrix]).astype(data_type)
+        HCHO_slant_col = (np.sum(HCHO_gas_mixing_ratio * air_partial_col, axis=0)[invalid_matrix] * HCHO_amf[invalid_matrix]).astype(data_type)
+        N2_slant_col = (np.sum(N2_gas_mixing_ratio * air_partial_col, axis=0)[invalid_matrix] * N2_amf[invalid_matrix]).astype(data_type)
+        NO2_slant_col = (np.sum(NO2_gas_mixing_ratio * air_partial_col, axis=0)[invalid_matrix] * NO2_amf[invalid_matrix]).astype(data_type)
+        O2_slant_col = (np.sum(O2_gas_mixing_ratio * air_partial_col, axis=0)[invalid_matrix] * O2_amf[invalid_matrix]).astype(data_type)
+        O3_slant_col = (np.sum(O3_gas_mixing_ratio * air_partial_col, axis=0)[invalid_matrix] * O3_amf[invalid_matrix]).astype(data_type)
+        SO2_slant_col = (np.sum(SO2_gas_mixing_ratio * air_partial_col, axis=0)[invalid_matrix] * SO2_amf[invalid_matrix]).astype(data_type)
 
 
         #perhaps modify transform to account for out of range inputs
