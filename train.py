@@ -175,9 +175,9 @@ def main():
         
         data_type = np.float32
 
-        solar_zenith_angle = solar_zenith_angle[invalid_matrix]
-        viewing_zenith_angle = viewing_zenith_angle[invalid_matrix]
-        relative_azimuth_angle = relative_azimuth_angle[invalid_matrix]
+        # solar_zenith_angle = solar_zenith_angle[invalid_matrix]
+        # viewing_zenith_angle = viewing_zenith_angle[invalid_matrix]
+        # relative_azimuth_angle = relative_azimuth_angle[invalid_matrix]
 
         Ar_slant_col = (np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf[invalid_matrix]).astype(data_type)
         BrO_slant_col = (np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf[invalid_matrix]).astype(data_type)
@@ -198,19 +198,19 @@ def main():
         #try:
         #    with np.errstate(divide='ignore', over='ignore'):
         feature_map = np.stack((
-            np.deg2rad(solar_zenith_angle), #normal
-            np.deg2rad(viewing_zenith_angle), #normal
-            np.deg2rad(relative_azimuth_angle), #normal
+            # np.deg2rad(solar_zenith_angle), #normal
+            # np.deg2rad(viewing_zenith_angle), #normal
+            # np.deg2rad(relative_azimuth_angle), #normal
             #transform_func(surface_pressure),  #skewed
             #transform_func(tropopause_pressure), #skewed
             #terrain_height,   #skewed
-            albedo,  #skewed
+            # albedo,  #skewed
 
             #transform_func(Ar_slant_col[0]), #skewed
             #transform_func(BrO_slant_col[0]), #skewed
             #transform_func(GLYX_slant_col[0]), #skewed
-            #transform_func(H2O_slant_col[0]), #skewed
-            #transform_func(HCHO_slant_col[0]), #skewed
+            # transform_func(H2O_slant_col[0]), #skewed
+            transform_func(HCHO_slant_col[0]), #skewed
             #transform_func(N2_slant_col[0]), #skewe
             #transform_func(NO2_slant_col[0]), #skewed
             #transform_func(O2_slant_col[0]), #skewed
