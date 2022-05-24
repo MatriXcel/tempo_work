@@ -1,3 +1,4 @@
+from xml.dom import INVALID_MODIFICATION_ERR
 from netCDF4 import Dataset
 import matplotlib.pyplot as plt 
 import cartopy.crs as ccrs
@@ -127,7 +128,11 @@ def main():
 
 
             Ar_gas_mixing_ratio = la_src['Profile']['Ar_GasMixingRatio'][:]
+
+            #Ar_gas_mixing_ratio = np.where((Ar_gas_mixing_ratio < 0) | (Ar_gas_mixing_ratio > 100), np.nan, Ar_gas_mixing_ratio)
+
             BrO_gas_mixing_ratio = la_src['Profile']['BrO_GasMixingRatio'][:]
+
             CO2_gas_mixing_ratio = la_src['Profile']['CO2_GasMixingRatio'][:]
             GLYX_gas_mixing_ratio = la_src['Profile']['GLYX_GasMixingRatio'][:]
             H2O_gas_mixing_ratio = la_src['Profile']['H2O_GasMixingRatio'][:]
@@ -150,82 +155,102 @@ def main():
             O3_amf = la_src['RTM_Band1']['O3_AMF'][:]
             SO2_amf = la_src['RTM_Band1']['SO2_AMF'][:]
 
+            min_amf = 0
+            max_amf = 20
+
+            # invalid_matrix = ((Ar_amf < min_amf) | (Ar_amf > max_amf)) & ((BrO_amf < 0) | (BrO_amf > 100)) & ((CO2_amf < 0) | (CO2_amf > 100)) & ((GLYX_amf < 0) | (GLYX_amf > 100)) & \
+            # ((H2O_amf < 0) | (H2O_amf > 100)) & ((HCHO_amf < 0) | (HCHO_amf > 100)) & ((N2_amf < 0) | (N2_amf > 100)) & ((NO2_amf < 0) | (NO2_amf > 100)) & \
+            # ((O2_amf < 0) | (O2_amf > 100)) & ((O3_amf < 0) | (O3_amf > 100)) & ((SO2_amf < 0) | (SO2_amf > 100))
+
+            invalid_matrix = ((HCHO_amf < 0) | (HCHO_amf > 100))
+
+            # Ar_amf = np.where(invalid_matrix, np.nan, Ar_amf)
+            # BrO_amf = np.where(invalid_matrix, np.nan, BrO_amf)
+
+            
             #add filter/flag that selects pixels for which there is proper data
             #expected range is around 0-20, start with that, just look at AMF for formaldehyde
-            
+            #try training on the whole thing
+
         
-        data_type = np.float64
+        data_type = np.float32
 
-        Ar_slant_col = (np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf).astype(data_type)
-        BrO_slant_col = (np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf).astype(data_type)
-        GLYX_slant_col = (np.sum(GLYX_gas_mixing_ratio * air_partial_col, axis=0) * GLYX_amf).astype(data_type)
-        H2O_slant_col = (np.sum(H2O_gas_mixing_ratio * air_partial_col, axis=0) * H2O_amf).astype(data_type)
-        HCHO_slant_col = (np.sum(HCHO_gas_mixing_ratio * air_partial_col, axis=0) * HCHO_amf).astype(data_type)
-        N2_slant_col = (np.sum(N2_gas_mixing_ratio * air_partial_col, axis=0) * N2_amf).astype(data_type)
-        NO2_slant_col = (np.sum(NO2_gas_mixing_ratio * air_partial_col, axis=0) * NO2_amf).astype(data_type)
-        O2_slant_col = (np.sum(O2_gas_mixing_ratio * air_partial_col, axis=0) * O2_amf).astype(data_type)
-        O3_slant_col = (np.sum(O3_gas_mixing_ratio * air_partial_col, axis=0) * O3_amf).astype(data_type)
-        SO2_slant_col = (np.sum(SO2_gas_mixing_ratio * air_partial_col, axis=0) * SO2_amf).astype(data_type)
+        solar_zenith_angle = solar_zenith_angle[invalid_matrix]
+        viewing_zenith_angle = viewing_zenith_angle[invalid_matrix]
+        relative_azimuth_angle = relative_azimuth_angle[invalid_matrix]
+
+        Ar_slant_col = (np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf[invalid_matrix]).astype(data_type)
+        BrO_slant_col = (np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf[invalid_matrix]).astype(data_type)
+        GLYX_slant_col = (np.sum(GLYX_gas_mixing_ratio * air_partial_col, axis=0) * GLYX_amf[invalid_matrix]).astype(data_type)
+        H2O_slant_col = (np.sum(H2O_gas_mixing_ratio * air_partial_col, axis=0) * H2O_amf[invalid_matrix]).astype(data_type)
+        HCHO_slant_col = (np.sum(HCHO_gas_mixing_ratio * air_partial_col, axis=0) * HCHO_amf[invalid_matrix]).astype(data_type)
+        N2_slant_col = (np.sum(N2_gas_mixing_ratio * air_partial_col, axis=0) * N2_amf[invalid_matrix]).astype(data_type)
+        NO2_slant_col = (np.sum(NO2_gas_mixing_ratio * air_partial_col, axis=0) * NO2_amf[invalid_matrix]).astype(data_type)
+        O2_slant_col = (np.sum(O2_gas_mixing_ratio * air_partial_col, axis=0) * O2_amf[invalid_matrix]).astype(data_type)
+        O3_slant_col = (np.sum(O3_gas_mixing_ratio * air_partial_col, axis=0) * O3_amf[invalid_matrix]).astype(data_type)
+        SO2_slant_col = (np.sum(SO2_gas_mixing_ratio * air_partial_col, axis=0) * SO2_amf[invalid_matrix]).astype(data_type)
 
 
+        #perhaps modify transform to account for out of range inputs
         transform_func = np.log
         #np.seterr(all = 'ignore') 
        
-        try:
-             with np.errstate(divide='ignore', over='ignore'):
-                feature_map = np.stack((
-                    np.deg2rad(solar_zenith_angle), #normal
-                    np.deg2rad(viewing_zenith_angle), #normal
-                    np.deg2rad(relative_azimuth_angle), #normal
-                    #transform_func(surface_pressure),  #skewed
-                    #transform_func(tropopause_pressure), #skewed
-                    #terrain_height,   #skewed
-                    albedo,  #skewed
+        #try:
+        #    with np.errstate(divide='ignore', over='ignore'):
+        feature_map = np.stack((
+            np.deg2rad(solar_zenith_angle), #normal
+            np.deg2rad(viewing_zenith_angle), #normal
+            np.deg2rad(relative_azimuth_angle), #normal
+            #transform_func(surface_pressure),  #skewed
+            #transform_func(tropopause_pressure), #skewed
+            #terrain_height,   #skewed
+            albedo,  #skewed
 
-                    #transform_func(Ar_slant_col[0]), #skewed
-                    #transform_func(BrO_slant_col[0]), #skewed
-                    #transform_func(GLYX_slant_col[0]), #skewed
-                    #transform_func(H2O_slant_col[0]), #skewed
-                    #transform_func(HCHO_slant_col[0]), #skewed
-                    #transform_func(N2_slant_col[0]), #skewe
-                    #transform_func(NO2_slant_col[0]), #skewed
-                    #transform_func(O2_slant_col[0]), #skewed
-                    #transform_func(O3_slant_col[0]), #skewed
-                    #transform_func(SO2_slant_col[0]) #skewed
-                ), axis=-1)
-             print("this one passed")
+            #transform_func(Ar_slant_col[0]), #skewed
+            #transform_func(BrO_slant_col[0]), #skewed
+            #transform_func(GLYX_slant_col[0]), #skewed
+            #transform_func(H2O_slant_col[0]), #skewed
+            #transform_func(HCHO_slant_col[0]), #skewed
+            #transform_func(N2_slant_col[0]), #skewe
+            #transform_func(NO2_slant_col[0]), #skewed
+            #transform_func(O2_slant_col[0]), #skewed
+            #transform_func(O3_slant_col[0]), #skewed
+            #transform_func(SO2_slant_col[0]) #skewed
+        ), axis=-1)
+        print("this one passed")
 
-             training_examples = feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2])
-             HCHO_amf_labels = HCHO_amf[0].reshape(HCHO_amf[0].shape[0] * HCHO_amf[0].shape[1])
-            
-             print("HCHO amf", HCHO_amf[0].shape)
-             print("HCHO amf labels", HCHO_amf_labels.shape)
+        #training_examples = feature_map.reshape(feature_map.shape[0] * feature_map.shape[1], feature_map.shape[2])
+        training_examples = feature_map
+        HCHO_amf_labels = HCHO_amf[0].reshape(HCHO_amf[0].shape[0] * HCHO_amf[0].shape[1])
+    
+        print("HCHO amf", HCHO_amf[0].shape)
+        print("HCHO amf labels", HCHO_amf_labels.shape)
 
-             all_training_examples.append(training_examples)
-             all_training_labels.extend(HCHO_amf_labels)
-             
+        all_training_examples.extend(training_examples)
+        all_training_labels.extend(HCHO_amf_labels)
+        
 
-             successes += 1
+        successes += 1
 
-             filenames_used.append(filename)
+        filenames_used.append(filename)
 
-             if successes == 3:
-                break
-        except:
-            return 1
+        # if successes == 3:
+        #     break
+        # except:
+        #     return 1
 
     
-    print("total number of successes ", successes)
-    print("out of ", len(file_names))
+    # print("total number of successes ", successes)
+    # print("out of ", len(file_names))
 
     
     training_tensor = torch.from_numpy(np.array(all_training_examples))
-    training_tensor = training_tensor.flatten(0, 1)
+    #training_tensor = training_tensor.flatten(0, 1)
     
    # [ [], [], [] ]
-    print("elemtn shape is", all_training_labels[0].shape)
-    print("length", len(all_training_labels))
-    print("array shape is", np.asarray(all_training_labels).shape)
+    # print("elemtn shape is", all_training_labels[0].shape)
+    # print("length", len(all_training_labels))
+    # print("array shape is", np.asarray(all_training_labels).shape)
 
     label_tensor = torch.from_numpy(np.asarray(all_training_labels))
     label_tensor = label_tensor.flatten()
