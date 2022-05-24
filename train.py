@@ -178,6 +178,8 @@ def main():
         # solar_zenith_angle = solar_zenith_angle[invalid_matrix]
         # viewing_zenith_angle = viewing_zenith_angle[invalid_matrix]
         # relative_azimuth_angle = relative_azimuth_angle[invalid_matrix]
+        print("AR AMF shape", Ar_amf.shape)
+        print("HCHO amf shape", HCHO_amf.shape)
 
         Ar_slant_col = (np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf[0][invalid_matrix]).astype(data_type)
         BrO_slant_col = (np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf[invalid_matrix]).astype(data_type)
