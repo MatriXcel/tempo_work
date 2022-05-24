@@ -179,7 +179,7 @@ def main():
         # viewing_zenith_angle = viewing_zenith_angle[invalid_matrix]
         # relative_azimuth_angle = relative_azimuth_angle[invalid_matrix]
 
-        Ar_slant_col = (np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf[invalid_matrix]).astype(data_type)
+        Ar_slant_col = (np.sum(Ar_gas_mixing_ratio * air_partial_col, axis=0) * Ar_amf[0][invalid_matrix]).astype(data_type)
         BrO_slant_col = (np.sum(BrO_gas_mixing_ratio * air_partial_col, axis=0) * BrO_amf[invalid_matrix]).astype(data_type)
         GLYX_slant_col = (np.sum(GLYX_gas_mixing_ratio * air_partial_col, axis=0) * GLYX_amf[invalid_matrix]).astype(data_type)
         H2O_slant_col = (np.sum(H2O_gas_mixing_ratio * air_partial_col, axis=0) * H2O_amf[invalid_matrix]).astype(data_type)
