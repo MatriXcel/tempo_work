@@ -126,7 +126,7 @@ def main():
             print(filename, "is running")
             air_partial_col = la_src['Profile']['AirPartialColumn'][:]
             
-            print(la_src['geolocation'])
+            #print(la_src['geolocation'])
 
             Ar_gas_mixing_ratio = la_src['Profile']['Ar_GasMixingRatio'][:]
 
